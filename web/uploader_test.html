@@ -15,9 +15,8 @@
 
     <script type="text/javascript">
       // Client ID and API key from the Developer Console
-      // var CLIENT_ID = '898794306729-d5fjkvb72ukik5p0fj1egkq9or4i7amo.apps.googleusercontent.com'; XLAB
+      
       var CLIENT_ID = '909161419224-470smbbtdimk88tagufk88pvfvqref7t.apps.googleusercontent.com';
-      // var API_KEY = 'AIzaSyDj6NhCZpF8rhS2Cy9NmHHOpFVcxQmI7_Q'; XLAB
       var API_KEY = 'AIzaSyBvgdJnZ3EUtY9ak4qKZ9pu003Pch-xapk';
 
       // Array of API discovery doc URLs for APIs used by the quickstart
@@ -25,7 +24,6 @@
 
       // Authorization scopes required by the API; multiple scopes can be
       // included, separated by spaces.
-      // var SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly';
       var SCOPES = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.install https://www.googleapis.com/auth/drive.file';
 
       var authorizeButton = document.getElementById('authorize_button');
@@ -90,9 +88,6 @@
 
           var fileContent = 'sample text'; // As a sample, upload a text file.
           var file = new Blob([fileContent], {type: 'text/plain'});
-
-          // var accessToken = gapi.auth.getToken().access_token; // Here gapi is used for retrieving the access token.var
-          // console.log(accessToken);
 
           var parentId = '';//some parentId of a folder under which to create the new folder
           var metadata = {
