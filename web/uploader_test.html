@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Drive API Quickstart</title>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <p>Drive API Quickstart</p>
+
+    <!--Add buttons to initiate auth sequence and sign out-->
+    <button id="authorize_button" style="display: none;">Authorize</button>
+    <button id="signout_button" style="display: none;">Sign Out</button>
+
+    <pre id="content" style="white-space: pre-wrap;"></pre>
+
+    <script type="text/javascript">
+      // Client ID and API key from the Developer Console
+      // var CLIENT_ID = '898794306729-d5fjkvb72ukik5p0fj1egkq9or4i7amo.apps.googleusercontent.com'; XLAB
+      var CLIENT_ID = '909161419224-470smbbtdimk88tagufk88pvfvqref7t.apps.googleusercontent.com';
+      // var API_KEY = 'AIzaSyDj6NhCZpF8rhS2Cy9NmHHOpFVcxQmI7_Q'; XLAB
+      var API_KEY = 'AIzaSyBvgdJnZ3EUtY9ak4qKZ9pu003Pch-xapk';
+
+      // Array of API discovery doc URLs for APIs used by the quickstart
+      var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
+
+      // Authorization scopes required by the API; multiple scopes can be
+      // included, separated by spaces.
+      // var SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly';
+      var SCOPES = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.install https://www.googleapis.com/auth/drive.file';
+
+      var authorizeButton = document.getElementById('authorize_button');
+      var signoutButton = document.getElementById('signout_button');
+
+      /**
+       *  On load, called to load the auth2 library and API client library.
+       */
+      function handleClientLoad() {
+        gapi.load('client:auth2', initClient);
+      }
+
+      /**
+       *  Initializes the API client library and sets up sign-in state
+       *  listeners.
+       */
+      function initClient() {
+        gapi.client.init({
+          apiKey: API_KEY,
+          clientId: CLIENT_ID,
+          discoveryDocs: DISCOVERY_DOCS,
+          scope: SCOPES
+        }).then(function () {
+          // Listen for sign-in state changes.
+          gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+
+
+
+          // Handle the initial sign-in state.
+          updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+
+          populateFile();
+
+          authorizeButton.onclick = handleAuthClick;
+          signoutButton.onclick = handleSignoutClick;
+        }, function(error) {
+          appendPre(JSON.stringify(error, null, 2));
+        });
+      }
+
+      /**
+       *  Called when the signed in status changes, to update the UI
+       *  appropriately. After a sign-in, the API is called.
+       */
+      function updateSigninStatus(isSignedIn) {
+        if (isSignedIn) {
+          authorizeButton.style.display = 'none';
+          signoutButton.style.display = 'block';
+
+
+
+
+
+          listFiles();
+        } else {
+          authorizeButton.style.display = 'block';
+          signoutButton.style.display = 'none';
+        }
+      }
+
+      function populateFile() {
+
+          var fileContent = 'sample text'; // As a sample, upload a text file.
+          var file = new Blob([fileContent], {type: 'text/plain'});
+
+          // var accessToken = gapi.auth.getToken().access_token; // Here gapi is used for retrieving the access token.var
+          // console.log(accessToken);
+
+          var parentId = '';//some parentId of a folder under which to create the new folder
+          var metadata = {
+            // 'name' : 'New Folder',
+            // 'mimeType' : 'application/vnd.google-apps.folder',
+            // don't parents': ['ROOT_FOLDER']
+
+            'name': 'sampleName', // Filename at Google Drive
+            'mimeType': 'text/plain', // mimeType at Google Drive
+
+          };
+
+
+          var form = new FormData();
+          form.append('metadata', new Blob([JSON.stringify(metadata)], {type: 'application/json'}));
+          form.append('file', file);
+
+      
+            function get_access_token_using_saved_refresh_token() {
+
+              // from the oauth playground
+              const refresh_token = "1//04NGPd38lH2kWCgYIARAAGAQSNwF-L9IraWeUl1ty0F-fXd3WHFNl1p10eX_YuZwjtvW96T_WtQYfVyL7radqJiz_fGjCAwyTQ6I";
+              // from the API console
+              const client_id = "909161419224-470smbbtdimk88tagufk88pvfvqref7t.apps.googleusercontent.com";
+              // from the API console
+              const client_secret = "z_f8eMUPB02_M1O117qqrOZf";
+              // from https://developers.google.com/identity/protocols/OAuth2WebServer#offline
+              const refresh_url = "https://www.googleapis.com/oauth2/v4/token";
+
+              const post_body = `grant_type=refresh_token&client_id=${encodeURIComponent(client_id)}&client_secret=${encodeURIComponent(client_secret)}&refresh_token=${encodeURIComponent(refresh_token)}`;
+
+              let refresh_request = {
+                  body: post_body,
+                  method: "POST",
+                  headers: new Headers({
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                })
+              }
+
+              // post to the refresh endpoint, parse the json response and use the access token to call files.list
+              fetch(refresh_url, refresh_request).then( response => {
+                      return(response.json());
+                  }).then( response_json =>  {
+                      console.log(response_json);
+                      // files_list(response_json.access_token);
+
+
+                      var xhr = new XMLHttpRequest();
+                      xhr.open('post', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id');
+                      xhr.setRequestHeader('Authorization', 'Bearer ' + response_json.access_token);
+                      xhr.responseType = 'json';
+                      xhr.onload = () => {
+                        console.log(xhr.response.id); // Retrieve uploaded file ID.
+                      };
+                      xhr.send(form);
+              });
+            }
+
+            get_access_token_using_saved_refresh_token();
+      }
+
+
+
+      /**
+       *  Sign in the user upon button click.
+       */
+      function handleAuthClick(event) {
+        gapi.auth2.getAuthInstance().signIn();
+      }
+
+      /**
+       *  Sign out the user upon button click.
+       */
+      function handleSignoutClick(event) {
+        gapi.auth2.getAuthInstance().signOut();
+      }
+
+      /**
+       * Append a pre element to the body containing the given message
+       * as its text node. Used to display the results of the API call.
+       *
+       * @param {string} message Text to be placed in pre element.
+       */
+      function appendPre(message) {
+        var pre = document.getElementById('content');
+        var textContent = document.createTextNode(message + '\n');
+        pre.appendChild(textContent);
+      }
+
+      /**
+       * Print files.
+       */
+      function listFiles() {
+        gapi.client.drive.files.list({
+          'pageSize': 10,
+          'fields': "nextPageToken, files(id, name)"
+        }).then(function(response) {
+          appendPre('Files:');
+          var files = response.result.files;
+          if (files && files.length > 0) {
+            for (var i = 0; i < files.length; i++) {
+              var file = files[i];
+              appendPre(file.name + ' (' + file.id + ')');
+            }
+          } else {
+            appendPre('No files found.');
+          }
+        });
+      }
+
+
+   
+
+    </script>
+
+    <script async defer src="https://apis.google.com/js/api.js"
+      onload="this.onload=function(){};handleClientLoad()"
+      onreadystatechange="if (this.readyState === 'complete') this.onload()">
+    </script>
+  </body>
+</html>
