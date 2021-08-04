@@ -2,9 +2,54 @@
 <html>
   <head>
     <title>Algaphon</title>
+    <link rel="stylesheet" href="styles/style.css">
     <meta charset="utf-8" />
   </head>
   <body>
+  <div class="container">
+  	<div class="topnav">
+  			<a href="index.html" id="sitetitle">ALGAPHON</a>
+  			<a class="active" href="stream.html">LIVE STREAM</a>
+  			<a href="archive.html">ARCHIVE</a>
+  			<a href="about.html">ABOUT</a>
+	</div>
+  	<div class="main-content">
+  		<div class="exhibit-elements">
+  			<p class="big-p">Urban environments and manicured nature, with sight unseen of native organism diversity, have led to forgotten evolutionary histories and a reduced understanding of ecosystem relations. The aquatic plant biosphere especially bears a collective amnesia from the humans of its evolutionary roles.</p>
+  			<p id="shortdescription">Algaphon is hybrid installation wherein algae bubbles that ring at minnaert frequency near algal filaments are rendered audible through a hydrophone.</p>
+  			<div>
+  				<button id="exploreSpeciesButton" class="customButton"></button>
+  				<button id="liveRecordingButton" class="customButton"></button>
+  			</div>
 
+  			<div class="algaeVideoContainer">
+  				<video autoplay muted loop class="algaeVideos">
+  				<source src="../assets/videos/red-ogo.mp4" type="video/mp4">
+  					Your browser does not support the video tag.
+				</video>
+  				<button id="liveRecordingButton" class="customButton pulltobottom"></button>
+  			</div>
+
+  			<div class="algaeVideoContainer">
+  				<video autoplay muted loop class="algaeVideos">
+  				<source src="../assets/videos/sea-lettuce.mp4" type="video/mp4">
+  					Your browser does not support the video tag.
+				</video>
+  				<button id="liveRecordingButton" class="customButton pulltobottom"></button>
+  			</div>
+
+  		</div>
+  	</div>	
+  	<div class="footer">
+  		<!-- <button id="exploreSpeciesButton" class="customButton"></button> -->
+  		<div class="scrollIndicator"></div>
+  	</div>
+  </div>
+  
+
+  
+  <script type="text/javascript">
+  	
+  </script>
   </body>
 </html>

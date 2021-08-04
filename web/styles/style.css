@@ -1,1 +1,221 @@
-style.css
+html {
+    height: 100%;
+    font-size: 100%;
+}
+body {
+    min-height: 100%;
+    background-color: #000000;
+    font-family: 'Neue Haas Unica';
+	font-size: 1rem;
+    color: white; 
+    margin: 0;
+    padding: 0;
+}
+
+@font-face {
+    font-family: 'Neue Haas Unica';
+    src: local('Neue Haas Unica Regular'), local('Neue-Haas-Unica-Regular'),
+        url('../assets/fonts/NeueHaasUnica-Regular.woff2') format('woff2'),
+        url('../assets/fonts/NeueHaasUnica-Regular.woff') format('woff'),
+        url('../assets/fonts/NeueHaasUnica-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+  }
+
+
+@font-face {
+    font-family: 'Neue Haas Unica';
+    src: local('Neue Haas Unica Bold'), local('Neue-Haas-Unica-Bold'),
+        url('../assets/fonts/NeueHaasUnica-Bold.woff2') format('woff2'),
+        url('../assets/fonts/NeueHaasUnica-Bold.woff') format('woff'),
+        url('../assets/fonts/NeueHaasUnica-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+.container{
+	overflow: hidden;
+}
+
+#sitetitle{
+	font-family: 'Neue Haas Unica';
+	font-size: 1.56rem;
+	font-weight: 700;
+	text-decoration: none;
+	color: white;
+	margin-right: 5%;
+	position: relative;
+	top:5px;
+}
+
+.sitecontent{
+	font-family: 'Neue Haas Unica';
+
+}
+
+.main-content{
+	height: 100%;
+	padding-bottom: 20%;
+	float: left;
+	width: 100%;
+}
+
+.topnav{
+	background-color: #000000;
+	padding: 2% 0 1% 5%;
+	width: 100%;
+	position: fixed;
+	left: 0;
+	top: 0;
+	z-index: 2;
+}
+
+.topnav a:not(:first-child){
+	text-decoration: none;
+	margin-right: 5.5%;
+	font-size: 0.875rem;
+	font-weight: 700;
+}
+
+.topnav a:not(:first-child):hover{
+	/*text-decoration: underline;*/
+	border-bottom: 1px solid #ffffff;
+	padding-bottom: 3px;
+}
+
+.topnav a.active{
+	/*text-decoration: underline;*/
+	border-bottom: 1px solid #ffffff;
+	padding-bottom: 3px;
+}
+
+p{
+	line-height: 2.5rem;
+	padding: 0;
+	margin: 0;
+}
+
+a{
+	color: #ffffff;
+}
+
+
+.big-p{
+	font-size: 1.5rem;
+	line-height: 3rem;
+	margin: 1.5rem 0 1.5rem 0;
+}
+
+h1{
+	font-size: 6.25rem;
+	letter-spacing: 1.22rem;
+	font-weight: 400;
+	margin: 0;
+	padding: 0;
+}
+
+h2{
+	font-size: 3.125rem;
+	letter-spacing: 1.15rem;
+	font-weight: 400;
+	margin: 0;
+	padding: 0;
+}
+
+h3{
+	font-weight: 700;
+	padding: 0;
+	margin: 0;
+}
+
+.exhibit-elements{
+	margin-top: 15%;
+	margin-left: 20%;
+	padding-right: 26%;
+}
+
+
+/*Entry page*/
+.customButton{
+	border: 0;
+}
+
+#shortdescription{
+	margin-bottom: 5%;
+}
+
+#exploreSpeciesButton{
+	background-image: url( '../assets/images/explore-species@2x.png' ),
+					  url( '../assets/images/explore-species-hover@2x.png' );
+    background-size: 200px 42px;
+    width: 200px;	
+	height: 42px;
+	margin-right: 8%;
+}
+
+#exploreSpeciesButton:hover{
+	background-image: url( '../assets/images/explore-species-hover@2x.png' ),
+					  url( '../assets/images/explore-species@2x.png' );					  
+	cursor:pointer;
+}
+
+#liveRecordingButton{
+	background-image: url( '../assets/images/live-recording@2x.png' ),
+					  url( '../assets/images/liver-recording-hover@2x.png' );
+    background-size: 200px 42px;
+	width: 200px;	
+	height: 42px;
+}
+
+#liveRecordingButton:hover{
+	background-image: url( '../assets/images/liver-recording-hover@2x.png' ),
+					  url( '../assets/images/live-recording@2x.png' );
+	cursor:pointer;
+}
+
+.algaeVideoContainer{
+	height: 500px;
+	width: 100%;
+	display: block;
+	position: relative;
+	margin-top: 20%;
+	/*margin-bottom: 5%;*/
+}
+
+.algaeVideos{
+	width: 100%;
+}
+
+.pulltobottom{
+	bottom: 0;
+	left:0;
+	position: absolute;
+}
+
+.footer{
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	margin-bottom: 1%;
+}
+
+.scrollIndicator{
+	display: block;
+	width: 20px;
+	height: 38px;
+	background-image: url('../assets/images/scroll@2x.png');
+	background-size: 20px 38px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/* Live video page - stream.html */
+
+/* About page - about.html */
+.team-member{
+	margin: 5rem 4rem 0 0;
+	display: inline-block;
+}
+
+/* Archive page - archive.html */
