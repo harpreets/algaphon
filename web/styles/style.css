@@ -116,7 +116,7 @@ h1{
 
 h2{
 	font-size: 3.125rem;
-	letter-spacing: 1.15rem;
+	letter-spacing: 0.85rem;
 	font-weight: 400;
 	margin: 0;
 	padding: 0;
@@ -211,6 +211,128 @@ h3{
 }
 
 /* Live video page - stream.html */
+.main-content{
+	padding-bottom: 0;
+}
+
+.stream-elements{
+	width: 100%;
+	margin-top: 15%;
+	/*margin-left: 20%;*/
+	/*padding-right: 26%;*/
+}
+
+.audio-stream{
+	height: 300px;
+	display: block;
+	width: 100%;
+}
+
+.video-stream{
+
+}
+
+.poem p{
+	font-size: 1.5rem;
+	font-weight: 400;
+	width: 40%;
+	line-height: 3.5rem;   
+	margin: auto;
+	padding-left:5%;
+}
+
+.how-it-works{
+	margin: auto;
+	padding-top: 20%;
+	width: 60%;
+}
+
+.talk-to-me{
+	width: 100%;
+	margin-top:20%;
+	background-color: #ffffff;
+}
+
+.talk-to-me p{
+	color:#000000;
+}
+
+.talk-to-me h2, .talk-to-me h3{
+	color:#000000;
+	margin-bottom: 3%;
+}
+
+.talker-section{
+	width: 60%;
+	margin: auto;
+	padding-top: 10%;
+}
+
+.recorder{
+	margin-top:5%;
+}
+
+.visitor-details{
+	margin-top: 5%;
+	padding-bottom: 20%;
+
+}
+
+#recordButton{
+	background-image: url( '../assets/images/record@2x.png' );
+				  	  /*url( '../assets/images/record-hover@2x.png' );*/
+	background-size: 64px 64px;
+	width: 64px;	
+	height: 64px;
+	background-color:#ffffff;
+}
+
+#recordButton:hover{
+	background-image: url( '../assets/images/record-hover@2x.png' ),
+				  	  url( '../assets/images/record@2x.png' );
+	background-size: 64px 64px;
+	width: 64px;	
+	height: 64px;
+}
+
+#sendRecordingButton{
+	background-image: url( '../assets/images/send-recording-disabled@2x.png' );
+					  /*url( '../assets/images/send-recording@2x.png' ),*/
+					  /*url( '../assets/images/send-recording-hover@2x.png' );*/
+    background-size: 200px 45px;
+	width: 200px;	
+	height: 45px;
+	margin-top:5%;
+	display: block;
+}
+
+#sendRecordingButton:hover{
+	/*background-image: url( '../assets/images/send-recording-hover@2x.png' ),
+					  url('../assets/images/send-recording-disabled@2x.png');*/
+	cursor:pointer;
+}
+
+form, form a{
+	color: #000000;
+}
+
+input[type=text] {
+    border-width:0px;
+	border:none;
+	border-bottom: 1px solid #ccc; 
+	display: inline-block;
+	margin: 0 1% 0 1%;
+	color:#ccc;
+}
+
+input[type=text]:focus {
+	outline: none;
+	color: #000000;
+}
+
+.privacy-policy{
+	margin-top:3%;
+}
 
 /* About page - about.html */
 .team-member{
