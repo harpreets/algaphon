@@ -74,7 +74,11 @@
             <h3>RECORD A MESSAGE</h3>
             
               <div class="recorder">  
-                <div class="recordingscrub"></div>
+                <div class="recordingscrub-container">
+                  <div id="recordingScrubBackgound" class="recordingscrub"></div>
+                  <div id="replayScrubBackgound" class="replayingscrub"></div>
+                  <span id="scrubbing-indicator"></span>
+                </div>
                 <button id="recordButton" class="customButton"></button>
                 <button id="stopRecordingButton" class="customButton"></button>
                 <button id="playRecordingButton" class="customButton"></button>
@@ -85,8 +89,8 @@
                 </div>
 
                    <!-- 
-                   Fix the background of the scrub bar,
-                   Make the archive page
+                    Right hand side border of the scrubber box
+                    Make the archive page
                  -->
 
                    <!-- 
@@ -104,7 +108,7 @@
                     <p>
                       My name is <input id="firstNameText" type="text" name="name" value="Roscoe Jones" />, I'm tuning from <input id="cityNameText" type="text" name="city" value="Linz" /> <br/>
                       Please send the response to <input id="emailText" type="text" name="email" value="roscoe@example.com" />
-                      <input hidden type="hidden" name="audiofilename" value="testAudio" />
+                      <input id="audioFileName" hidden type="hidden" name="audiofilename" value="placeholder" />
                     </p>
 
                     <div class="privacy-policy">

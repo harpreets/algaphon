@@ -277,7 +277,7 @@ h3{
 	position: relative;
 }
 
-.recordingscrub{
+.recordingscrub-container{
 	height:3.5rem;
 	width:41rem;
 	border: 2px solid #000000;
@@ -285,6 +285,44 @@ h3{
 	top: 2px;
 	border-radius: 2rem;
 	z-index: 1;
+}
+
+.recordingscrub{
+	position: relative;
+	width: 0rem;
+	height: 3.125rem;
+	left: 64px;
+	top: 4px;
+	display: inline-block;
+	background-image: url( '../assets/images/scrubber.png' );
+	background-size: 32rem 3.125rem;
+	background-color: transparent;
+	z-index: 3;
+}
+
+.replayingscrub{
+	position: absolute;
+	width: 32rem;
+	height: 3.125rem;
+	left: 63px;
+	top: 4px;
+	display: none;
+	background-image: url( '../assets/images/bluescrubber.png' );
+	background-size: 32rem 3.125rem;
+	background-color: transparent;
+	z-index: 4;
+}
+
+#scrubbing-indicator{
+	background-image:  url('../assets/images/scrubber-sideborder@2x.png');
+	background-size: 14.5px 59.5px;
+	position: relative;
+	top:3px;
+	left: 55px;
+	display: none;
+	background-color: transparent;
+	width:0.906rem;
+	height: 3.125rem;
 }
 
 .visitor-details{
@@ -405,7 +443,7 @@ h3{
 }
 
 .sendRecordingEnabledButtonStl{
-background-image: url( '../assets/images/send-recording@2x.png' ),
+	background-image: url( '../assets/images/send-recording@2x.png' ),
 				  url( '../assets/images/send-recording-hover@2x.png' ),
 				  url( '../assets/images/send-recording-disabled@2x.png' );
     background-size: 200px 45px;
@@ -430,12 +468,13 @@ background-image: url( '../assets/images/send-recording-hover@2x.png' ),
 	font-weight: 700;
 	color:#000000;
 	position: relative;
-	top:5px;
-	left:32rem;
+	top:0.5rem;
+	left:32.5rem;
 }
 
 .recording-do-over-container{
 	height: 0.8rem;
+	margin-top:1rem;
 }
 
 #recordingDoOverLabel{
