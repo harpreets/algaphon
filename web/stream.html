@@ -1,138 +1,153 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Algaphon</title>
-    <link rel="stylesheet" href="styles/style.css">
-    <link rel="stylesheet" href="https://s.pageclip.co/v1/pageclip.css" media="screen">
-    <meta charset="utf-8" />
-  </head>
-  <body>
+<head>
+  <title>Algaphon</title>
+  <link rel="stylesheet" href="styles/style.css">
+  <!-- <link rel="stylesheet" href="https://s.pageclip.co/v1/pageclip.css" media="screen"> -->
+  <meta charset="utf-8" />
+</head>
+<body>
   <div class="container">
   	<div class="topnav">
-  			<a href="index.html" id="sitetitle">ALGAPHON</a>
-  			<a class="active" href="stream.html">LIVE STREAM</a>
-  			<a href="archive.html">ARCHIVE</a>
-  			<a href="about.html">ABOUT</a>
-	</div>
-  	<div class="main-content">
-  		<div class="stream-elements">
+     <a href="index.html" id="sitetitle">ALGAPHON</a>
+     <a class="active" href="stream.html">LIVE STREAM</a>
+     <a href="archive.html">ARCHIVE</a>
+     <a href="about.html">ABOUT</a>
+   </div>
+   <div class="main-content">
+    <div class="stream-elements">
       <div class="audio-stream">
-        
+
       </div>
       <div class="video-steam">
-        
+
       </div>
 
-          <div class="poem">
-            <p>
-              so I count my hopes: the bumblebees<br/>
-              <strong><u>are making a comeback, one snug tight</u></strong><br/>
-              in a purple flower I passed to get to you;<br/>
-              your favorite color is purple but Prince’s<br/>
-              was orange & we both find this hard to believe;<br/>
-              today the park is green, we take grass for granted<br/>
-              the leaves chuckle around us; behind<br/>
-              your head a butterfly rests on a tree; it’s been<br/>
-              there our whole conversation; by my old apartment<br/>
-              was a butterfly sanctuary where I would read<br/>
-              & two little girls would sit next to me; you caught<br/>
-              a butterfly once but didn’t know what to feed it<br/>
-              so you trapped it in a jar & gave it to a girl<br/>
-              you liked. I asked if it died. you say you like<br/>
-            </p>
-          </div>
+      <div class="poem">
+        <p>
+          so I count my hopes: the bumblebees<br/>
+          <strong><u>are making a comeback, one snug tight</u></strong><br/>
+          in a purple flower I passed to get to you;<br/>
+          your favorite color is purple but Prince’s<br/>
+          was orange & we both find this hard to believe;<br/>
+          today the park is green, we take grass for granted<br/>
+          the leaves chuckle around us; behind<br/>
+          your head a butterfly rests on a tree; it’s been<br/>
+          there our whole conversation; by my old apartment<br/>
+          was a butterfly sanctuary where I would read<br/>
+          & two little girls would sit next to me; you caught<br/>
+          a butterfly once but didn’t know what to feed it<br/>
+          so you trapped it in a jar & gave it to a girl<br/>
+          you liked. I asked if it died. you say you like<br/>
+        </p>
+      </div>
 
-          <div class="how-it-works">
-            <h2>HOW IT WORKS</h2>
-            <p class="big-p">Algahon is hybrid installation wherein algae bubbles that ring at minnaert frequency near algal filaments are rendered audible through a hydrophone.</p>
+      <div class="how-it-works">
+        <h2>HOW IT WORKS</h2>
+        <p class="big-p">Algahon is hybrid installation wherein algae bubbles that ring at minnaert frequency near algal filaments are rendered audible through a hydrophone.</p>
 
-            <p>
-            lorem ipsum dolor sit amet consectetuer adipiscing elit sed diam nonummy nibh euismod 
-            </p>
+        <p>
+          lorem ipsum dolor sit amet consectetuer adipiscing elit sed diam nonummy nibh euismod 
+        </p>
 
-            <p>
-            lorem ipsum dolor sit amet consectetuer adipiscing elit sed diam nonummy nibh euismod 
-            </p>
+        <p>
+          lorem ipsum dolor sit amet consectetuer adipiscing elit sed diam nonummy nibh euismod 
+        </p>
 
-            <p>
-            lorem ipsum dolor sit amet consectetuer adipiscing elit sed diam nonummy nibh euismod 
-            </p>
+        <p>
+          lorem ipsum dolor sit amet consectetuer adipiscing elit sed diam nonummy nibh euismod 
+        </p>
 
-            <p>
-            lorem ipsum dolor sit amet consectetuer adipiscing elit sed diam nonummy nibh euismod 
-            </p>
-          </div>
+        <p>
+          lorem ipsum dolor sit amet consectetuer adipiscing elit sed diam nonummy nibh euismod 
+        </p>
+      </div>
 
-          <div class="talk-to-me">
-            <div class="talker-section">
-              <h2>TALK TO ME</h2>
+      <div class="talk-to-me">
+        <div class="talker-section">
+          <h2>TALK TO ME</h2>
 
-              <p>You can record your three second message here for the algae. Any language works!</p>
-              <p>You'll receive the response from the algae in a remote aquarium within 24-48hours via email.</p>
+          <p>You can record your three second message here for the algae. Any language works!</p>
+          <p>You'll receive the response from the algae in a remote aquarium within 24-48hours via email.</p>
 
-              <div class="recorder">
-                <h3>RECORD A MESSAGE</h3>
-                  <button id="recordButton" class="customButton"></button>
-
-                  <!-- Press record, 
-                    Record a messgae, limit the recording to three and cut off automatically
-                    Change to replay button afetr recording
-                    //add a label or something to let them know to put in name and email if they okay wiht their recording
-
-                   -->
+          <div id="recording-section">
+            <h3>RECORD A MESSAGE</h3>
+            
+              <div class="recorder">  
+                <div class="recordingscrub"></div>
+                <button id="recordButton" class="customButton"></button>
+                <button id="stopRecordingButton" class="customButton"></button>
+                <button id="playRecordingButton" class="customButton"></button>
+                <button id="pausePlaybackButton" class="customButton"></button>
+                <label id="recordingTimeLabel" class="recordingLabel">00:000</label>
+                <div class="recording-do-over-container">
+                  <label id="recordingDoOverLabel">Not happy with the recording? <a id="rerecord-a" >Do it again</a></label>
+                </div>
 
                    <!-- 
-                    After pressing the send button, convert the audio stream to a file that can be then uploaded to Google Drive. 
-                    Upload to Drive and then think of NodeSJ method.
-                   -->
+                   Fix the background of the scrub bar,
+                   Make the archive page
+                 -->
 
-              </div>
+                   <!-- 
+                    NODEJS PROCESSING OF FILES TO LIGHT
+                  -->
 
-              <div class="visitor-details">
+                </div>
+
+
+                <div class="visitor-details">
                   <h3>WHERE WOULD YOU LIKE THE RESPONSE TO BE SENT?</h3>
 
                   <form action="https://send.pageclip.co/B1ouJoSIXxSf3ag0VYLxs9BFQUcEdDGk" class="pageclip-form" method="post">
-                      <!-- Replace these inputs with your own. Make sure they have a "name" attribute! -->
-                      <p>
-                        My name is <input type="text" name="name" value="Roscoe Jones" />, I'm tuning from <input type="text" name="city" value="Linz" /> <br/>
-                        Please send the response to <input type="text" name="email" value="roscoe@example.com" />
-                        <input hidden type="hidden" name="audiofilename" value="testAudio" />
-                      </p>
 
-                      <!-- This button will have a loading spinner. Keep the inner span for best results. -->
-                      <!-- <button type="submit" class="pageclip-form__submit">
-                        <span>Send</span>
-                      </button> -->
-                      <div class="privacy-policy">
-                        <input type="checkbox" name="name" value="Roscoe Jones" /> I have read the <a href=""> privacy policy. </a>
-                      </div>
+                    <p>
+                      My name is <input id="firstNameText" type="text" name="name" value="Roscoe Jones" />, I'm tuning from <input id="cityNameText" type="text" name="city" value="Linz" /> <br/>
+                      Please send the response to <input id="emailText" type="text" name="email" value="roscoe@example.com" />
+                      <input hidden type="hidden" name="audiofilename" value="testAudio" />
+                    </p>
 
-                      <button type="submit" id="sendRecordingButton" class="customButton pageclip-form__submit"></button>
+                    <div class="privacy-policy">
+                      <input id="visitorPrivacyCheck" type="checkbox" name="name" value="Roscoe Jones" /> I have read the <a href=""> privacy policy. </a>
+                    </div>
+
+                    <div class="error-label-container">
+                      <label id="errorGuideLabel"></label>
+                    </div>
+                    <button type="submit" id="sendRecordingButton" class="customButton sendRecordingDisabledButtonStl pageclip-form__submit--dark-loader"></button>
+
                   </form>
 
+                </div>
+              
 
+            </div>
 
-                  
-              </div>
+            <div id="thank-you-container">
+              <h3>THANK YOU!</h3>
+              <p>You'll receive a response in 48 hours.</p>
+
+              <button id="continueExploringButton" class="customButton"></button>
             </div>
           </div>
 
 
-  		</div>
-  	</div>	
-  	<div class="footer">
-  		<!-- <button id="exploreSpeciesButton" class="customButton"></button> -->
-  		<div class="scrollIndicator"></div>
-  	</div>
+        </div>
+      </div>	
+      <div class="footer">
+        <!-- <button id="exploreSpeciesButton" class="customButton"></button> -->
+        <div class="scrollIndicator"></div>
+      </div>
+    </div>
   </div>
-  
 
-  
+
+
   <script src="scripts/algaphonrecorder.js" charset="utf-8"></script>
-  <script src="https://s.pageclip.co/v1/pageclip.js" charset="utf-8"></script>
+  <script src="scripts/pageclip.js" charset="utf-8"></script>
   <script async defer src="https://apis.google.com/js/api.js"
-      onload="this.onload=function(){};handleClientLoad()"
-      onreadystatechange="if (this.readyState === 'complete') this.onload()">
-  </script>
-  </body>
+  onload="this.onload=function(){};handleClientLoad()"
+  onreadystatechange="if (this.readyState === 'complete') this.onload()">
+</script>
+</body>
 </html>

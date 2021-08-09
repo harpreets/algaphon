@@ -77,6 +77,12 @@ function uploadAudiofile(audioblobMsg) {
 
 	};
 
+	if(form === undefined){
+		console.log("underfined found");
+		sendRecordingBtn.disabled = true;
+		return;
+	}
+
 	form.append('metadata', new Blob([JSON.stringify(metadata)], {
 		type: 'application/json'
 	}));
@@ -160,17 +166,49 @@ function appendPre(message) {
 
 
 //Used for storing audio file 
-var form = new FormData();
+var form;
+var audioBlob;
+var mediaRecorder;
+var audio;
+
+var startTime;
+var elapsedTime;
+var elapsedTimeStr;
+var recordingInternvalTimer;
+
+var recordBtn = document.getElementById("recordButton");
+var stopRecordingBtn = document.getElementById("stopRecordingButton");
+var playRecordingBtn = document.getElementById("playRecordingButton");
+var pausePlaybackBtn = document.getElementById("pausePlaybackButton");
+var sendRecordingBtn = document.getElementById("sendRecordingButton"); sendRecordingBtn.disabled = true;
+
+var recordingDoOverLbl = document.getElementById("recordingDoOverLabel");
+var rerecordLnk = document.getElementById("rerecord-a");
+var errorGuideLbl = document.getElementById("errorGuideLabel");
+var visitorPrivacyChk = document.getElementById("visitorPrivacyCheck");
+var nameTxt = document.getElementById("firstNameText");
+var cityTxt = document.getElementById("cityNameText");
+var emailTxt = document.getElementById("emailText");
 
 
 //Recording button - save to blob
-document.getElementById("recordButton").onclick = function() {
+recordBtn.onclick = recordVisitorMsg;
+
+function recordVisitorMsg() {
 	navigator.mediaDevices.getUserMedia({
 			audio: true
 		})
 		.then(stream => {
-			const mediaRecorder = new MediaRecorder(stream);
+			// const mediaRecorder = new MediaRecorder(stream);
+
+			elapsedTime = 0;
+			startTime = new Date();
+			
+
+			mediaRecorder = new MediaRecorder(stream);
 			mediaRecorder.start();
+
+			setRecorderElapser(1); //sending 1 for starting
 
 			const audioChunks = [];
 			mediaRecorder.addEventListener("dataavailable", event => {
@@ -178,23 +216,168 @@ document.getElementById("recordButton").onclick = function() {
 			});
 
 			mediaRecorder.addEventListener("stop", () => {
-				const audioBlob = new Blob(audioChunks, {
+				form = new FormData();
+				audioBlob = new Blob(audioChunks, {
 					'type': 'audio/mp3'
 				});
 				const audioUrl = URL.createObjectURL(audioBlob);
 
 
-				console.log(form);
-				uploadAudiofile(audioBlob);
+				setRecorderState("stopped"); //sening current playerstate afetr starting recording 
+				checkRecorderSendingUIStatus();
 
-				const audio = new Audio(audioUrl);
+				// const audio = new Audio(audioUrl);
+				audio = new Audio(audioUrl);
+				audio.addEventListener("ended", function(){ setRecorderState("stopped") });
+
 				audio.play();
 			});
 
 			setTimeout(() => {
 				mediaRecorder.stop();
+				setRecorderElapser(0);	
 			}, 3000);
 		});
+}
+
+function setRecorderElapser(runningStatus) {
+	
+	var lblRecording = document.getElementById('recordingTimeLabel');
+
+	if (runningStatus == 1) {
+		console.log("Yes, running elapser");
+		setRecorderState("recording"); //sening current playerstate afetr starting recording 
+
+		recordingInternvalTimer = setInterval(function() {
+
+			elapsedTime = (new Date()) - startTime;
+
+			var recordedmillis = (elapsedTime % 1000);
+			var recordedseconds = Math.round(elapsedTime / 1000);
+			if (recordedseconds == 3) recordedmillis = '000';
+			elapsedTimeStr = '0' + recordedseconds + ' : ' + recordedmillis;
+			lblRecording.innerHTML = elapsedTimeStr;
+
+		}, 102);
+
+	} else if (runningStatus == 0) {
+		//stop the tmer
+
+		console.log(recordingInternvalTimer);
+		lblRecording.innerHTML = elapsedTimeStr;
+		clearInterval(recordingInternvalTimer);
+	}
+}
+
+function setRecorderState(playerState){
+	//ready to record -  
+	//stop recording - recording
+	//play/replay recording - playReady
+	//pause playback - playing
+
+	//if player is currently recording 
+	//show the UI with stop button to be able to stop recording
+	//replace record button with stop button
+	if(playerState == "recording"){
+		// recordBtn.parentNode.replaceChild(stopRecordingBtn, recordBtn);
+		recordBtn.style.display = 'none';
+		stopRecordingBtn.style.display = 'block';
+		playRecordingBtn.style.display = 'none';
+		recordingDoOverLbl.style.display = 'none';
+	}else if (playerState == "stopped"){
+		//if player is currently stopped after recording or playback, set the UI to show play button
+		// stopRecordingBtn.parentNode.replaceChild(playRecordingBtn, stopRecordingBtn);
+		stopRecordingBtn.style.display = 'none';
+		pausePlaybackBtn.style.display = 'none';
+		playRecordingBtn.style.display = 'block';
+		recordingDoOverLbl.style.display = 'block';
+	}else if (playerState == "playing"){
+		//if player is current playing, show pause button
+		// playRecordingBtn.parentNode.replaceChild(pausePlaybackBtn, playRecordingBtn);
+		playRecordingBtn.style.display = 'none';
+		pausePlaybackBtn.style.display = 'block';
+	}else if (playerState == "paused"){
+		// pausePlaybackBtn.parentNode.replaceChild(playRecordingBtn, pausePlaybackBtn);
+		pausePlaybackBtn.style.display = 'none';
+		playRecordingButton.style.display = 'block';
+	}else if(playerState == "readyToRecord"){
+		//TODO
+	}
+}
+
+
+stopRecordingBtn.onclick = function() {
+	mediaRecorder.stop();
+	setRecorderElapser(0);
+}
+
+playRecordingBtn.onclick = function() {
+	audio.play();
+	setRecorderState("playing")
+}
+
+pausePlaybackBtn.onclick = function() {
+	audio.pause();
+	setRecorderState("paused");
+}
+
+sendRecordingBtn.onclick = function() {
+	//Check if a message has been recorded by the visior
+	
+	uploadAudiofile(audioBlob);
+}
+
+rerecordLnk.onclick = recordVisitorMsg;
+
+visitorPrivacyChk.onchange = function(){
+	//check if any text fields of recordings are empty
+	checkRecorderSendingUIStatus();
+}
+
+
+//return 0 if some field was left empty
+//returns 1 is all fields are good
+function isVisitorFieldPopulated(){
+	if (form === undefined){
+		errorGuideLbl.innerHTML = "Please record a message to be sent"
+		return 0;
+	}
+
+	//Check name, email fields
+	if ( (nameTxt == "" || nameTxt.length == 0 || nameTxt == null) &&
+		 (cityTxt == "" || cityTxt.length == 0 || cityTxt == null) &&
+		 (emailTxt == "" || emailTxt.length == 0 || emailTxt == null) ){
+		errorGuideLbl.innerHTML = "Please check name, city and email fields"
+		return 0; 
+	}
+
+	if ( !visitorPrivacyChk.checked){
+		errorGuideLbl.innerHTML = "Please accept the privacy policy to proceed."
+		return 0;
+	}
+
+	return 1;
+}
+
+function checkRecorderSendingUIStatus(){
+	if (isVisitorFieldPopulated()){
+		//change the class to show the button send recording
+		//add an attribute to the element that says enabled
+		sendRecordingBtn.classList.add("sendRecordingEnabledButtonStl");
+		sendRecordingBtn.disabled = false;
+		errorGuideLbl.innerHTML = "";
+		if (sendRecordingBtn.classList.contains("sendRecordingDisabledButtonStl")){
+			sendRecordingBtn.classList.remove("sendRecordingDisabledButtonStl");
+		}
+	}else{
+		//add the class for disabled button
+		// element.classList.add("my-class");
+		sendRecordingBtn.classList.add("sendRecordingDisabledButtonStl");
+		sendRecordingBtn.disabled = true;
+		if(sendRecordingBtn.classList.contains("sendRecordingEnabledButtonStl")){
+			sendRecordingBtn.classList.remove("sendRecordingEnabledButtonStl");
+		}
+	}
 }
 
 

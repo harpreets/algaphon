@@ -67,7 +67,7 @@ body {
 	position: fixed;
 	left: 0;
 	top: 0;
-	z-index: 2;
+	z-index: 3;
 }
 
 .topnav a:not(:first-child){
@@ -268,8 +268,23 @@ h3{
 	padding-top: 10%;
 }
 
+#recording-section{
+	margin-top: 5%;
+}
+
 .recorder{
 	margin-top:5%;
+	position: relative;
+}
+
+.recordingscrub{
+	height:3.5rem;
+	width:41rem;
+	border: 2px solid #000000;
+	position: absolute;
+	top: 2px;
+	border-radius: 2rem;
+	z-index: 1;
 }
 
 .visitor-details{
@@ -284,7 +299,9 @@ h3{
 	background-size: 64px 64px;
 	width: 64px;	
 	height: 64px;
-	background-color:#ffffff;
+	background-color: transparent;
+	position: relative;
+	z-index: 2;
 }
 
 #recordButton:hover{
@@ -293,23 +310,160 @@ h3{
 	background-size: 64px 64px;
 	width: 64px;	
 	height: 64px;
+	position: relative;
+	z-index: 2;
+	background-color: transparent;
 }
 
-#sendRecordingButton{
+#stopRecordingButton{
+	background-image: url( '../assets/images/stop@2x.png' ),
+				  	  url( '../assets/images/stop-hover@2x.png' );
+	background-size: 64px 64px;
+	width: 64px;	
+	height: 64px;
+	position: relative;
+	display: none;
+	z-index: 2;
+	background-color: transparent;
+}
+
+#stopRecordingButton:hover{
+	background-image: url( '../assets/images/stop-hover@2x.png' ),
+				  	  url( '../assets/images/stop@2x.png' );
+	background-size: 64px 64px;
+	width: 64px;	
+	height: 64px;
+	position: relative;
+	z-index: 2;
+	background-color: transparent;
+}
+
+#playRecordingButton{
+	background-image: url( '../assets/images/play@2x.png' ),
+				  	  url( '../assets/images/play-hover@2x.png' );
+	background-size: 64px 64px;
+	width: 64px;	
+	height: 64px;
+	display: none;
+	position: relative;
+	z-index: 2;
+	background-color: transparent;
+}
+
+#playRecordingButton:hover{
+	background-image: url( '../assets/images/play-hover@2x.png' ),
+				  	  url( '../assets/images/play@2x.png' );
+	background-size: 64px 64px;
+	width: 64px;	
+	height: 64px;
+	position: relative;
+	z-index: 2;
+	background-color: transparent;
+}
+
+#pausePlaybackButton{
+	background-image: url( '../assets/images/pause@2x.png' ),
+				  	  url( '../assets/images/pause-hover@2x.png' );
+	background-size: 64px 64px;
+	width: 64px;	
+	height: 64px;
+	display: none;
+	position: relative;
+	z-index: 2;
+	background-color: transparent;
+}
+
+#pausePlaybackButton:hover{
+	background-image: url( '../assets/images/pause-hover@2x.png' ),
+				  	  url( '../assets/images/pause@2x.png' );
+	background-size: 64px 64px;
+	width: 64px;	
+	height: 64px;
+	position: relative;
+	z-index: 2;
+	background-color: transparent;
+}
+
+.sendRecordingDisabledButtonStl{
 	background-image: url( '../assets/images/send-recording-disabled@2x.png' );
-					  /*url( '../assets/images/send-recording@2x.png' ),*/
-					  /*url( '../assets/images/send-recording-hover@2x.png' );*/
+					  /*url( '../assets/images/send-recording@2x.png' ),
+					  url( '../assets/images/send-recording-hover@2x.png' );*/
     background-size: 200px 45px;
 	width: 200px;	
 	height: 45px;
-	margin-top:5%;
+	
 	display: block;
+	position: relative;
+	z-index: 2;
 }
 
-#sendRecordingButton:hover{
+.sendRecordingDisabledButtonStl:hover{
 	/*background-image: url( '../assets/images/send-recording-hover@2x.png' ),
 					  url('../assets/images/send-recording-disabled@2x.png');*/
 	cursor:pointer;
+	z-index: 2;
+}
+
+.sendRecordingEnabledButtonStl{
+background-image: url( '../assets/images/send-recording@2x.png' ),
+				  url( '../assets/images/send-recording-hover@2x.png' ),
+				  url( '../assets/images/send-recording-disabled@2x.png' );
+    background-size: 200px 45px;
+	width: 200px;	
+	height: 45px;
+	
+	display: block;
+	position: relative;
+	z-index: 2;
+}
+
+.sendRecordingEnabledButtonStl:hover{
+background-image: url( '../assets/images/send-recording-hover@2x.png' ),
+				  url( '../assets/images/send-recording@2x.png' ),
+				  url( '../assets/images/send-recording-disabled@2x.png' );
+	cursor:pointer;
+	z-index: 2;
+}
+
+.recordingLabel{
+	font-size: 1rem;
+	font-weight: 700;
+	color:#000000;
+	position: relative;
+	top:5px;
+	left:32rem;
+}
+
+.recording-do-over-container{
+	height: 0.8rem;
+}
+
+#recordingDoOverLabel{
+	font-weight: 400;
+	color: #0A0A0A;
+	position: relative;
+	font-size: 0.8rem;
+	display: none;
+}
+
+.error-label-container{
+	margin-top:2rem;
+	margin-bottom: 0.1rem;
+	height: 1.5rem;
+
+}
+
+#errorGuideLabel{
+	font-weight: 400;
+	color: #ff0000;
+	position: relative;
+	font-size: 0.8rem;
+	margin-top:3%;
+}
+
+#rerecord-a{
+	text-decoration: underline;
+	color: #000000;
 }
 
 form, form a{
@@ -319,10 +473,12 @@ form, form a{
 input[type=text] {
     border-width:0px;
 	border:none;
+	font-size: 1rem;
 	border-bottom: 1px solid #ccc; 
 	display: inline-block;
 	margin: 0 1% 0 1%;
-	color:#ccc;
+	text-align: center;
+	/*color:#ccc;*/
 }
 
 input[type=text]:focus {
@@ -334,10 +490,156 @@ input[type=text]:focus {
 	margin-top:3%;
 }
 
+#thank-you-container{
+	display: none;
+	margin-top:5rem;
+	height: 39rem;
+}
+
+#thank-you-container h3{
+	margin-top:0px;
+	margin-bottom: 0px;
+}
+
+#thank-you-container p{
+	margin-top: 0px;
+	padding-bottom: 2rem;
+}
+
+#continueExploringButton{
+	background-image: url('../assets/images/keep-exploring@2x.png');
+				  	  /*url('../assets/images/keep-exploring-hover.png');*/
+	background-size: 200px 45px;
+    width: 200px;	
+	height: 45px;
+}
+
+#continueExploringButton:hover{
+	background-image: url('../assets/images/keep-exploring-hover@2x.png'),
+				  	  url('../assets/images/keep-exploring@2x.png');
+	cursor:pointer;
+	background-size: 200px 45px;
+    width: 200px;
+	height: 45px;
+}
+
+
+
+	
+
+
+
+
+
 /* About page - about.html */
 .team-member{
 	margin: 5rem 4rem 0 0;
 	display: inline-block;
 }
+
+
+/*Page Clip*/
+.pageclip-form {
+ position:relative
+}
+.pageclip-form__success {
+ position:absolute;
+ top:-1px;
+ left:-1px;
+ right:-1px;
+ bottom:-1px;
+ text-align:center;
+ background:hsla(0,0%,100%,.8);
+ z-index:1;
+ display:flex;
+ flex-direction:column;
+ justify-content:center
+}
+.pageclip-form__success__message {
+ font-size:2rem;
+ text-align:center;
+ transform-origin:center;
+ animation:.3s linear none a
+}
+.pageclip-form__submit {
+ position:relative
+}
+.pageclip-form__submit:after {
+ display:inline-block;
+ position:relative;
+ text-indent:-9999em;
+ border:3px solid hsla(0,0%,100%,.3);
+ border-left:3px solid #fff;
+ transform:scale(.01) translateZ(0);
+ border-radius:50%;
+ width:20px;
+ height:20px;
+ content:"";
+ position:absolute;
+ left:50%;
+ top:50%;
+ margin-left:-10px;
+ margin-top:-10px;
+ z-index:2
+}
+.pageclip-form__submit.pageclip-form__submit--dark-loader:after {
+ border-color:rgba(0,0,0,.3);
+ border-left-color:#000
+}
+.pageclip-form__submit.pageclip-form__submit--start-loading:after {
+ animation:.1s linear none a
+}
+.pageclip-form__submit.pageclip-form__submit--start-loading>span {
+ animation:.1s linear none c
+}
+.pageclip-form__submit.pageclip-form__submit--loading:after {
+ transform:translateZ(0);
+ animation:1.2s linear infinite d
+}
+.pageclip-form__submit.pageclip-form__submit--loading>span {
+ opacity:0
+}
+.pageclip-form__submit.pageclip-form__submit--end-loading:after {
+ animation:.1s linear none b
+}
+.pageclip-form__submit.pageclip-form__submit--end-loading>span {
+ animation:.1s linear reverse c
+}
+@keyframes a {
+ 0% {
+  transform:scale(.01) translateZ(0)
+ }
+ 50% {
+  transform:scale(1.2) translateZ(0)
+ }
+ to {
+  transform:scale(1) translateZ(0)
+ }
+}
+@keyframes b {
+ 0% {
+  transform:scale(1) translateZ(0)
+ }
+ to {
+  transform:scale(.01) translateZ(0)
+ }
+}
+@keyframes c {
+ 0% {
+  opacity:1
+ }
+ to {
+  opacity:0
+ }
+}
+@keyframes d {
+ 0% {
+  transform:rotate(0deg)
+ }
+ to {
+  transform:rotate(1turn)
+ }
+}
+
 
 /* Archive page - archive.html */
