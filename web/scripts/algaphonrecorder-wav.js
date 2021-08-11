@@ -1,3 +1,37 @@
+//Audio Processing functions -- converting audio buffer to wav
+function flattenArray(channelBuffer, recordingLength) {
+	var result = new Float32Array(recordingLength);
+	var offset = 0;
+	for (var i = 0; i < channelBuffer.length; i++) {
+		var buffer = channelBuffer[i];
+		result.set(buffer, offset);
+		offset += buffer.length;
+	}
+	return result;
+}
+
+function interleave(leftChannel, rightChannel) {
+	var length = leftChannel.length + rightChannel.length;
+	var result = new Float32Array(length);
+
+	var inputIndex = 0;
+
+	for (var index = 0; index < length;) {
+		result[index++] = leftChannel[inputIndex];
+		result[index++] = rightChannel[inputIndex];
+		inputIndex++;
+	}
+	return result;
+}
+
+function writeUTFBytes(view, offset, string) {
+	for (var i = 0; i < string.length; i++) {
+		view.setUint8(offset + i, string.charCodeAt(i));
+	}
+}
+
+
+
 //GDRIVE API Upload function
 
 // Client ID and API key from the Developer Console
@@ -40,46 +74,16 @@ function updateSigninStatus(isSignedIn) {
 }
 
 function uploadAudiofile(audioblobMsg) {
-
-	//e.g: if uploading text file
-
-	// var fileContent = 'sample text'; 
-	// var file = new Blob([fileContent], {
-	// 	type: 'text/plain'
-	// });
-
-
-	// var parentId = ''; //some parentId of a folder under which to create the new folder
-	// var metadata = {
-	// 	// 'name' : 'New Folder',
-	// 	// 'mimeType' : 'application/vnd.google-apps.folder',
-	// 	// don't parents': ['ROOT_FOLDER']
-
-	// 	'name': 'sampleName', // Filename at Google Drive
-	// 	'mimeType': 'text/plain', // mimeType at Google Drive
-	// };
-
-	// var form = new FormData();
-	// form.append('metadata', new Blob([JSON.stringify(metadata)], {
-	// 	type: 'application/json'
-	// }));
-	// form.append('file', file);
-
 	//Uploading audio
 	var parentId = ''; //some parentId of a folder under which to create the new folder
 	var randomAudioFileName = (Math.random() + 1).toString(36).substring(7);
 	audioFileNameHiddenInput.value = randomAudioFileName;
 	var metadata = {
-		// 'name' : 'New Folder',
-		// 'mimeType' : 'application/vnd.google-apps.folder',
-		// don't parents': ['ROOT_FOLDER']
-
-		'name': randomAudioFileName, // Filename at Google Drive
-		'mimeType': 'audio/webm', // mimeType at Google Drive
-
+		'name': randomAudioFileName + ".wav", // Filename at Google Drive
+		'mimeType': 'audio/wav', // mimeType at Google Drive
 	};
 
-	if(form === undefined){
+	if (form === undefined) {
 		console.log("underfined found");
 		sendRecordingBtn.disabled = true;
 		return;
@@ -114,7 +118,7 @@ function uploadAudiofile(audioblobMsg) {
 			})
 		}
 
-		// post to the refresh endpoint, parse the json response and use the access token to call files.list
+		// post to the refresh endpoint, parse the json response and use the access token to call
 		fetch(refresh_url, refresh_request).then(response => {
 			return (response.json());
 		}).then(response_json => {
@@ -148,23 +152,9 @@ function appendPre(message) {
 	pre.appendChild(textContent);
 }
 
-// function listFiles() {
-// 	gapi.client.drive.files.list({
-// 		'pageSize': 10,
-// 		'fields': "nextPageToken, files(id, name)"
-// 	}).then(function(response) {
-// 		appendPre('Files:');
-// 		var files = response.result.files;
-// 		if (files && files.length > 0) {
-// 			for (var i = 0; i < files.length; i++) {
-// 				var file = files[i];
-// 				appendPre(file.name + ' (' + file.id + ')');
-// 			}
-// 		} else {
-// 			appendPre('No files found.');
-// 		}
-// 	});
-// }
+
+
+//Web page stuff
 
 
 //Used for storing audio file 
@@ -183,7 +173,7 @@ var recordBtn = document.getElementById("recordButton");
 var stopRecordingBtn = document.getElementById("stopRecordingButton");
 var playRecordingBtn = document.getElementById("playRecordingButton");
 var pausePlaybackBtn = document.getElementById("pausePlaybackButton");
-var sendRecordingBtn = document.getElementById("sendRecordingButton"); 
+var sendRecordingBtn = document.getElementById("sendRecordingButton");
 sendRecordingBtn.disabled = true;
 var recordingScrubBg = document.getElementById("recordingScrubBackgound");
 var replayScrubBackgoundbg = document.getElementById("replayScrubBackgound");
@@ -203,59 +193,146 @@ var audioFileNameHiddenInput = document.getElementById("audioFileName");
 //Recording button - save to blob
 recordBtn.onclick = recordVisitorMsg;
 
+
+
+var leftchannel = [];
+var rightchannel = [];
+var recorder = null;
+var recordingLength = 0;
+var volume = null;
+var mediaStream = null;
+var sampleRate = 44100;
+var context = null;
+var blob = null;
+var url = null;
+var audio = null;
+
 function recordVisitorMsg() {
-	navigator.mediaDevices.getUserMedia({
+	// Initialize recorder
+	navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+	navigator.getUserMedia({
 			audio: true
-		})
-		.then(stream => {
-			// const mediaRecorder = new MediaRecorder(stream);
+		},
+		function(e) {
+			console.log("user consent");
+
+			// creates the audio context
+			window.AudioContext = window.AudioContext || window.webkitAudioContext;
+			context = new AudioContext();
+
+			// creates an audio node from the microphone incoming stream
+			mediaStream = context.createMediaStreamSource(e);
 
 			elapsedTime = 0;
 			percentScrubberWidth = 0;
 			startTime = new Date();
-			
 
-			mediaRecorder = new MediaRecorder(stream);
-			mediaRecorder.start();
+			// https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createScriptProcessor
+			// bufferSize: the onaudioprocess event is called when the buffer is full
+			var bufferSize = 2048;
+			var numberOfInputChannels = 2;
+			var numberOfOutputChannels = 2;
+			if (context.createScriptProcessor) {
+				recorder = context.createScriptProcessor(bufferSize, numberOfInputChannels, numberOfOutputChannels);
+			} else {
+				recorder = context.createJavaScriptNode(bufferSize, numberOfInputChannels, numberOfOutputChannels);
+			}
 
-			setRecorderElapser(1); //sending 1 for starting
+			recorder.onaudioprocess = function(e) {
+				leftchannel.push(new Float32Array(e.inputBuffer.getChannelData(0)));
+				rightchannel.push(new Float32Array(e.inputBuffer.getChannelData(1)));
+				recordingLength += bufferSize;
+			}
 
-			const audioChunks = [];
-			mediaRecorder.addEventListener("dataavailable", event => {
-				audioChunks.push(event.data);
-			});
-
-			mediaRecorder.addEventListener("stop", () => {
-				form = new FormData();
-
-				audioBlob = new File(
-    				audioChunks, 'my-file.webm',
-    				{ type: mediaRecorder.mimeType }
-
-				);
-
-				const audioUrl = URL.createObjectURL(audioBlob);
-
-
+			recorder.addEventListener("stop", () => {
 				setRecorderState("stopped"); //sening current playerstate afetr starting recording 
 				checkRecorderSendingUIStatus();
 
-				// const audio = new Audio(audioUrl);
-				audio = new Audio(audioUrl);
-				audio.addEventListener("ended", function(){ setRecorderState("stopped") });
-
-				audio.play();
+				// audio.addEventListener("ended", function(){ setRecorderState("stopped") });
 			});
 
-			setTimeout(() => {
-				mediaRecorder.stop();
-				setRecorderElapser(0);	
-			}, 3000);
+			// we connect the recorder
+			mediaStream.connect(recorder);
+			recorder.connect(context.destination);
+			setRecorderElapser(1); //sending 1 for starting
+		},
+		function(e) {
+			console.error(e);
 		});
+
+	setTimeout(() => {
+		stopRecording();
+		setRecorderElapser(0);
+	}, 3000);
+
+}
+
+
+
+function stopRecording() {
+	// stop recording
+	recorder.disconnect(context.destination);
+	mediaStream.disconnect(recorder);
+
+	// we flat the left and right channels down
+	// Float32Array[] => Float32Array
+	var leftBuffer = flattenArray(leftchannel, recordingLength);
+	var rightBuffer = flattenArray(rightchannel, recordingLength);
+	// we interleave both channels together
+	// [left[0],right[0],left[1],right[1],...]
+	var interleaved = interleave(leftBuffer, rightBuffer);
+
+	// we create our wav file
+	var buffer = new ArrayBuffer(44 + interleaved.length * 2);
+	var view = new DataView(buffer);
+
+	// RIFF chunk descriptor
+	writeUTFBytes(view, 0, 'RIFF');
+	view.setUint32(4, 44 + interleaved.length * 2, true);
+	writeUTFBytes(view, 8, 'WAVE');
+	// FMT sub-chunk
+	writeUTFBytes(view, 12, 'fmt ');
+	view.setUint32(16, 16, true); // chunkSize
+	view.setUint16(20, 1, true); // wFormatTag
+	view.setUint16(22, 2, true); // wChannels: stereo (2 channels)
+	view.setUint32(24, sampleRate, true); // dwSamplesPerSec
+	view.setUint32(28, sampleRate * 4, true); // dwAvgBytesPerSec
+	view.setUint16(32, 4, true); // wBlockAlign
+	view.setUint16(34, 16, true); // wBitsPerSample
+	// data sub-chunk
+	writeUTFBytes(view, 36, 'data');
+	view.setUint32(40, interleaved.length * 2, true);
+
+	// write the PCM samples
+	var index = 44;
+	var volume = 1;
+	for (var i = 0; i < interleaved.length; i++) {
+		view.setInt16(index, interleaved[i] * (0x7FFF * volume), true);
+		index += 2;
+	}
+
+	// our final blob
+	blob = new Blob([view], {
+		type: 'audio/wav'
+	});
+
+	form = new FormData();
+
+	setRecorderState("stopped"); //sening current playerstate afetr starting recording 
+	checkRecorderSendingUIStatus();
+
+	url = window.URL.createObjectURL(blob);
+	audio = new Audio(url);
+	audio.addEventListener("ended", function() {
+		setRecorderState("stopped");
+	});
+
+	// 	audio.play();
+
 }
 
 function setRecorderElapser(runningStatus) {
-	
+
 	var lblRecording = document.getElementById('recordingTimeLabel');
 
 	if (runningStatus == 1) {
@@ -264,14 +341,17 @@ function setRecorderElapser(runningStatus) {
 		recordingInternvalTimer = setInterval(function() {
 
 			elapsedTime = (new Date()) - startTime;
-			percentScrubberWidth = elapsedTime / (3*1000);
-			recordingScrubBg.style.width = (percentScrubberWidth*32) + 'rem';
+			percentScrubberWidth = elapsedTime / (3 * 1000);
+			recordingScrubBg.style.width = (percentScrubberWidth * 32) + 'rem';
 
-			
+
 
 			var recordedmillis = (elapsedTime % 1000);
 			var recordedseconds = Math.round(elapsedTime / 1000);
-			if (recordedseconds == 3) {recordedmillis = '000'; percentScrubberWidth = 1;}
+			if (recordedseconds == 3) {
+				recordedmillis = '000';
+				percentScrubberWidth = 1;
+			}
 			elapsedTimeStr = '0' + recordedseconds + ' : ' + recordedmillis;
 			lblRecording.innerHTML = elapsedTimeStr;
 
@@ -285,7 +365,7 @@ function setRecorderElapser(runningStatus) {
 	}
 }
 
-function setRecorderState(playerState){
+function setRecorderState(playerState) {
 	//ready to record -  
 	//stop recording - recording
 	//play/replay recording - playReady
@@ -294,7 +374,7 @@ function setRecorderState(playerState){
 	//if player is currently recording 
 	//show the UI with stop button to be able to stop recording
 	//replace record button with stop button
-	if(playerState == "recording"){
+	if (playerState == "recording") {
 		// recordBtn.parentNode.replaceChild(stopRecordingBtn, recordBtn);
 		recordBtn.style.display = 'none';
 		stopRecordingBtn.style.display = 'inline-block';
@@ -303,14 +383,14 @@ function setRecorderState(playerState){
 		playRecordingBtn.style.display = 'none';
 		replayScrubBackgoundbg.style.display = 'none';
 		recordingDoOverLbl.style.display = 'none';
-	}else if (playerState == "stopped"){
+	} else if (playerState == "stopped") {
 		//if player is currently stopped after recording or playback, set the UI to show play button
 		// stopRecordingBtn.parentNode.replaceChild(playRecordingBtn, stopRecordingBtn);
 		stopRecordingBtn.style.display = 'none';
 		pausePlaybackBtn.style.display = 'none';
 		playRecordingBtn.style.display = 'inline-block';
 		recordingDoOverLbl.style.display = 'inline-block';
-	}else if (playerState == "playing"){
+	} else if (playerState == "playing") {
 		//if player is current playing, show pause button
 		// playRecordingBtn.parentNode.replaceChild(pausePlaybackBtn, playRecordingBtn);
 		playRecordingBtn.style.display = 'none';
@@ -318,11 +398,11 @@ function setRecorderState(playerState){
 		recordingScrubBg.style.display = 'none';
 		replayScrubBackgoundbg.style.display = 'inline-block';
 		pausePlaybackBtn.style.display = 'inline-block';
-	}else if (playerState == "paused"){
+	} else if (playerState == "paused") {
 		// pausePlaybackBtn.parentNode.replaceChild(playRecordingBtn, pausePlaybackBtn);
 		pausePlaybackBtn.style.display = 'none';
 		playRecordingButton.style.display = 'inline-block';
-	}else if(playerState == "readyToRecord"){
+	} else if (playerState == "readyToRecord") {
 		//TODO
 	}
 }
@@ -334,7 +414,9 @@ stopRecordingBtn.onclick = function() {
 }
 
 playRecordingBtn.onclick = function() {
+
 	audio.play();
+
 	setRecorderState("playing")
 }
 
@@ -345,13 +427,13 @@ pausePlaybackBtn.onclick = function() {
 
 sendRecordingBtn.onclick = function() {
 	//Check if a message has been recorded by the visior
-	
+
 	uploadAudiofile(audioBlob);
 }
 
 rerecordLnk.onclick = recordVisitorMsg;
 
-visitorPrivacyChk.onchange = function(){
+visitorPrivacyChk.onchange = function() {
 	//check if any text fields of recordings are empty
 	checkRecorderSendingUIStatus();
 }
@@ -359,22 +441,22 @@ visitorPrivacyChk.onchange = function(){
 
 //return 0 if some field was left empty
 //returns 1 is all fields are good
-function isVisitorFieldPopulated(){
+function isVisitorFieldPopulated() {
 
-	if (form === undefined){
+	if (form === undefined) {
 		errorGuideLbl.innerHTML = "Please record a message to be sent"
 		return 0;
 	}
 
 	//Check name, email fields
-	if ( (nameTxt == "" || nameTxt.length == 0 || nameTxt == null) ||
-		 (cityTxt == "" || cityTxt.length == 0 || cityTxt == null) ||
-		 (emailTxt == "" || emailTxt.length == 0 || emailTxt == null) ){
+	if ((nameTxt == "" || nameTxt.length == 0 || nameTxt == null) ||
+		(cityTxt == "" || cityTxt.length == 0 || cityTxt == null) ||
+		(emailTxt == "" || emailTxt.length == 0 || emailTxt == null)) {
 		errorGuideLbl.innerHTML = "Please check name, city and email fields"
-		return 0; 
+		return 0;
 	}
 
-	if ( !visitorPrivacyChk.checked){
+	if (!visitorPrivacyChk.checked) {
 		errorGuideLbl.innerHTML = "Please accept the privacy policy to proceed."
 		return 0;
 	}
@@ -382,23 +464,23 @@ function isVisitorFieldPopulated(){
 	return 1;
 }
 
-function checkRecorderSendingUIStatus(){
+function checkRecorderSendingUIStatus() {
 	console.log(isVisitorFieldPopulated())
-	if (isVisitorFieldPopulated()){
+	if (isVisitorFieldPopulated()) {
 		//change the class to show the button send recording
 		//add an attribute to the element that says enabled
 		sendRecordingBtn.disabled = false;
 		sendRecordingBtn.classList.add("sendRecordingEnabledButtonStl");
 		errorGuideLbl.innerHTML = "";
-		if (sendRecordingBtn.classList.contains("sendRecordingDisabledButtonStl")){
+		if (sendRecordingBtn.classList.contains("sendRecordingDisabledButtonStl")) {
 			sendRecordingBtn.classList.remove("sendRecordingDisabledButtonStl");
 		}
-	}else{
+	} else {
 		//add the class for disabled button
 		// element.classList.add("my-class");
 		sendRecordingBtn.classList.add("sendRecordingDisabledButtonStl");
 		sendRecordingBtn.disabled = true;
-		if(sendRecordingBtn.classList.contains("sendRecordingEnabledButtonStl")){
+		if (sendRecordingBtn.classList.contains("sendRecordingEnabledButtonStl")) {
 			sendRecordingBtn.classList.remove("sendRecordingEnabledButtonStl");
 		}
 	}
