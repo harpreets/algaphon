@@ -1,24 +1,34 @@
-// TODO: Ignore files starting with .
-// Add arduino ports and checked wiht LEDs
-
-//Function of this program: 
-//When a new file is added to folder, add that to the queue
-//The first item from the queue, when available, starts processing
-//When the processing of the first item starts, check if it has the word finished/processed in the file name. If not, start processing this file
-//The audio processing function figures out peaks of each 0.5s in the audio file, and then maps those peaks to the lighting PAR
-//A timed function starts that runs for 45minutes
-//Every 7.5mins, function changes the light to the next thing. After 45minutes remove this current item from queue 
-//Save the sound file that is being recorded from microphone on the computer with the same name as input file but record
-//renanme the file to have prevFile + "finished"
-//and move the next audio file in the queue
+// TODO: 
+// Extend the Arudino code for the second LED strip
+// Push changes to github pages and get the website running
+// Check windows compatability
+// See if this can record audio too and save on file
 
 
+/*
+Function of this program: 
+When a new file is added to folder, add that to the queue. The first item from the queue, when available, starts processing.
+When the processing of the first item starts, check if it has the word finished/processed in the file name. If not, start processing this file.
+The audio processing function figures out peaks of each 0.5s in the audio file, and then maps those peaks to the lighting PAR. A timed function starts that runs for 45minutes
+Every 7.5mins, function changes the light to the next thing. After 45minutes remove this current item from queue.
+Save the sound file that is being recorded from microphone on the computer with the same name as input file but record. 
+Renanme the file to have prevFile + "finished", and move the next audio file in the queue
+*/
+
+
+/*
+/ ************ File watcher ************ / 
+*/
 const chokidar = require('chokidar');
 var fs = require('fs');
+const watchPostDirectory = "./postprocessed-manualsync";
 
-//start a list of current files
+/*
+/ ************ Audio Processing and auqarium light ************ / 
+*/
 let visitorAudioList = [];
 let finishedFileStatus = "_finished";
+let wavExtensionLength = -4; //.wav, as counted from the last
 let perVisitorHydroAudioDuration = 6; //minutes
 let numberOfSamplePerRecording = 6; //sampled 6 times from user recorded audio of 3s to calculate averages of 0s-0.5s, 0.5s-1s, 1s-1.5s, 1.5s-2s, 2s-2.5s, 2.5s-3s
 let lightChangeInterval = (perVisitorHydroAudioDuration / numberOfSamplePerRecording) * 60 * 1000; //change light per 7.5 minutes (*1000 for microsecond)
@@ -27,120 +37,6 @@ let intervalTimer = null;
 let isAudioProcessingStarted = false;
 let currentLightPlan = []; //list of current light intensities to be passed to arduino
 
-
-//Arduino things and serial port initialization:
-// var SerialPort = require('serialport'); // include the serialport library
-// var portName = process.argv[2]; // get the port name from the command line
-// var myPort = new SerialPort(portName, 9600);// open the port
-// myPort.on('open', openPort); // called when the serial port opens
-
-
-// One-liner for current directory
-chokidar.watch('./visitorrecording').on('all', (event, path) => {
-  if (event == "add") {
-    // console.log(event, path);
-    if (!path.includes(finishedFileStatus)) {
-      visitorAudioList.push(path);
-      console.log("Adding " + path + " file to aquarium processing queue\n");
-      if (isAudioProcessingStarted == false) {
-        console.log("Starting aquarium with the first reocrding: " + path);
-        startAquariumRecordingTimer(path);
-
-      }
-
-    }
-  }
-});
-
-function startAquariumRecordingTimer(sourceAudioFile) {
-  //start light timer after item has been found in queue
-  isAudioProcessingStarted = true;
-  decodeSoundFile(sourceAudioFile).then((result) => {
-    setAquariumLight(); //set the light for the first time and then interval takes over
-    intervalTimer = setInterval(setAquariumLight, lightChangeInterval);
-    // setCurrentLightPlan(sourceAudioFile);    
-  });
-}
-
-function setAquariumLight() {
-  var currentLightIntensity = currentLightPlan[0];
-  console.log("Setting light intensity to: " + currentLightIntensity + "\n");
-  //set the light through arduino
-  // sendData('A');
-  //remove the item from the array
-
-  //get first item from current light plan
-  // myPort.write(currentLightPlan[0]);
-  currentLightPlan.shift(); //remove the first item from the light plan because it has been sent
-
-  //if there's nothing left in lightPlan, stop timer
-  if (currentLightPlan === undefined || currentLightPlan.length == 0) {
-    console.log("Finsihed processing audio file: " + visitorAudioList[0] + ". Removing from queue.");
-    renameProcessedFile(visitorAudioList[0]);
-
-    stopAquariumRecordingTimer();
-
-    visitorAudioList.shift();
-    if (visitorAudioList.length != 0) {
-      console.log("Using the new file to set the light plan" + visitorAudioList[0]);
-      // setCurrentLightPlan(visitorAudioList[0]); //
-      startAquariumRecordingTimer(visitorAudioList[0]); //start with the next file in queue
-    } else {
-      console.log("Finished processing all visitor audio files")
-    }
-  }
-}
-
-//go over the recording and populate the array with the peaks
-function setCurrentLightPlan(filename) {
-  console.log("Set current light plan (filename):" + filename);
-  currentLightPlan.toString();
-
-  // currentLightPlan.push('a');
-  // currentLightPlan.push('b');
-  // currentLightPlan.push('c');
-  // currentLightPlan.push('d');
-  // currentLightPlan.push('e');
-}
-
-function resetCurrentLightPlan() {
-  currentLightPlan.length = 0;
-}
-
-
-function stopAquariumRecordingTimer() {
-  clearInterval(intervalTimer);
-  isAudioProcessingStarted = false;
-  resetCurrentLightPlan();
-  //check if there is something in the queue and process that
-  // if( visitorAudioList[0])
-}
-
-function renameProcessedFile(filepath) {
-  fs.rename(filepath, filepath + "_finished.wav", function(err) {
-    if (err) console.log('ERROR in renaming file: ' + err);
-  });
-}
-
-
-
-// function openPort() {
-//   // var brightness = 0; // the brightness to send for the LED
-//   console.log('port open');
-//   console.log('baud rate: ' + myPort.options.baudRate);
-
-//   // since you only send data when the port is open, this function
-//   // is local to the openPort() function:
-//   function sendData(aqLightCode) {
-//     // convert the value to an ASCII string before sending it:
-//     myPort.write(aqLightCode.toString());
-//     console.log('Sending ' + aquarium light code + ' out the serial port');
-//     // increment brightness by 10 points. Rollover if < 255:
-//   }
-// }
-
-
-//start audio processing of the current file
 var AudioContext = require('web-audio-api').AudioContext
 context = new AudioContext
 var fs = require('fs')
@@ -150,6 +46,48 @@ var _ = require('underscore');
 var pcmdata = [];
 var peaks = [];
 
+/*
+/ ************ Arduino communication to aquarium ************ / 
+*/
+
+var SerialPort = require('serialport'); // include the serialport library
+var baudRate = 9600;
+// console.log("Port name: " + process.argv[2]);
+// var portName = process.argv[2]; // get the port name from the command line
+var portName = "/dev/tty.SLAB_USBtoUART"; //use type ls /dev/tty* in terminal to find serial portname in MacOS
+var myPort = new SerialPort(portName, baudRate); // open the port
+
+myPort.on('open', openPort); // called when the serial port opens
+function openPort() {
+  // console.log(myPort);
+  console.log("Serial port has been opened.");
+}
+
+
+/*
+/ ************ Dir watching functions ************ / 
+*/
+
+const watcher = chokidar.watch(watchPostDirectory, {
+  ignored: /(^|[\/\\])\../, // ignore dotfiles
+  persistent: true
+});
+
+watcher
+  .on('add', path => {
+    if (!path.includes(finishedFileStatus)) {
+      visitorAudioList.push(path);
+      console.log("Adding " + path + " file to aquarium processing queue\n");
+      if (isAudioProcessingStarted == false) {
+        console.log("Starting aquarium with the first reocrding: " + path);
+        startAquariumRecordingTimer(path);
+      }
+    }
+  });
+
+/*
+/ ************ Audio processing before aquarium lighting logic ************ / 
+*/
 
 /**
  * [decodeSoundFile Use web-audio-api to convert audio file to a buffer of pcm data]
@@ -189,14 +127,6 @@ function decodeSoundFile(soundfile) {
   });
 
 }
-
-
-
-// let findPeaks = new Promise(function (resolve, reject) { 
-
-// });
-
-
 /**
  * [findPeaks Naive algo to identify peaks in the audio data, and wave]
  * @param  {[type]} pcmdata    [description]
@@ -219,6 +149,7 @@ function findPeaks(pcmdata, samplerate) {
         clearInterval(samplesound);
         console.log("finished sampling sound");
         resolve();
+        return;
       }
 
       for (var i = index; i < index + step; i++) {
@@ -306,6 +237,65 @@ function playsound(soundfile) {
   });
 }
 
+/*
+/ ************ Aquarium Lighting Logic -  ************ / 
+/ ************ Prerequirement: Audio is first processed with functions to find pcm amp peaks every 0.5s ************ / 
+*/
 
-//start a timer for the lighting things
-//count every 7.5 minutes and use current light intensitiies light to pass it arduino
+function startAquariumRecordingTimer(sourceAudioFile) {
+  //start light timer after item has been found in queue
+  isAudioProcessingStarted = true;
+  decodeSoundFile(sourceAudioFile).then((result) => {
+    setAquariumLight(); //set the light for the first time and then interval takes over
+    intervalTimer = setInterval(setAquariumLight, lightChangeInterval);
+  });
+}
+
+function setAquariumLight() {
+  var currentLightIntensity = currentLightPlan[0];
+  console.log("Setting light intensity to: " + currentLightIntensity + "\n");
+  myPort.write(currentLightIntensity.toString());
+
+  currentLightPlan.shift(); //remove the first item from the light plan because it has been sent
+
+  //if there's nothing left in lightPlan, stop timer
+  if (currentLightPlan === undefined || currentLightPlan.length == 0) {
+    console.log("Finsihed processing audio file: " + visitorAudioList[0] + ". Removing from queue.");
+    renameProcessedFile(visitorAudioList[0]);
+
+    stopAquariumRecordingTimer();
+
+    visitorAudioList.shift();
+    if (visitorAudioList.length != 0) {
+      console.log("Using the new file to set the light plan" + visitorAudioList[0]);
+      // setCurrentLightPlan(visitorAudioList[0]); //
+      startAquariumRecordingTimer(visitorAudioList[0]); //start with the next file in queue
+    } else {
+      console.log("Finished processing all visitor audio files")
+    }
+  }
+}
+
+//go over the recording and populate the array with the peaks
+function setCurrentLightPlan(filename) {
+  console.log("Set current light plan (filename):" + filename);
+  currentLightPlan.toString();
+}
+
+function resetCurrentLightPlan() {
+  currentLightPlan.length = 0;
+}
+
+
+function stopAquariumRecordingTimer() {
+  clearInterval(intervalTimer);
+  isAudioProcessingStarted = false;
+  resetCurrentLightPlan();
+}
+
+function renameProcessedFile(filepath) {
+  fs.rename(filepath, filepath.slice(0, wavExtensionLength) + "_finished.wav", function(err) {
+    if (err) console.log('ERROR in renaming file: ' + err);
+  });
+}
+

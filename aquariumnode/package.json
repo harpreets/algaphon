@@ -5,6 +5,7 @@
 	"version": "1.0.0",
 	"dependencies": {
 		"chokidar": "^3.5.2",
+		"serialport": "^9.2.0",
 		"underscore": "^1.13.1",
 		"web-audio-api": "0.2.2"
 	}
