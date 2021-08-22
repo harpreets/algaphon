@@ -27,6 +27,8 @@ Note: All computers (Tokyo x 1, NY x 2) can directly operate on the audio files 
 5. Manually create a 'postprocessed-manualsync' folder. 
 6. If not passing the port using command line arguments, open runlights.js and change portName var to reflect the actual port on your computer. If not known, use **type ls /dev/tty*** in terminal to find serial portname of your arduino in MacOS
 7. After installation of dependencies, run program using node runlights.js
+8. The program will start processing when audio files appear in the **postprocessed-manualsync** folder. 
+
 _Note: _
 All files coming in from visitors can have different amplitudes, mic intensities etc. Instead of doing automatic adaptive amplification, use Audacity to amplify these wav files manually. 
 Open Audacity, import the visitor audio file from the '**.gdrive-visitorrecording**' folder (where the files are coming in automatically from around the world)
