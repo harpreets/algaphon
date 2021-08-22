@@ -1,0 +1,11 @@
+{
+	"name": "aquarium_audioprocessing",
+	"main": "runlights.js",
+	"description": "Processes audio files and runs lights on connected aquarium",
+	"version": "1.0.0",
+	"dependencies": {
+		"chokidar": "^3.5.2",
+		"underscore": "^1.13.1",
+		"web-audio-api": "0.2.2"
+	}
+}
